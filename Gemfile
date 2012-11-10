@@ -40,3 +40,4 @@ gem "nifty-generators", :group => :development
 # gem 'ruby-debug19', :require => 'ruby-debug'
 
 gem "mocha", :group => :test
+gem 'nokogiri'
