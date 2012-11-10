@@ -10,9 +10,16 @@
 </p>
 <p>
   <strong>Themesong Url:</strong>
-  <%= @user.themesong_url %>
+  <%= link_to @user.themesong_url %>
 </p>
-
+<p>
+  <strong>RDIO User:</strong>
+  <%= @user.rdio_user %>
+</p>
+<p>
+  <strong>Device Name:</strong>
+  <%= @user.device_name %>
+</p>
 <p>
   <%= link_to "Edit", edit_user_path(@user) %> |
   <%= link_to "Destroy", @user, :confirm => 'Are you sure?', :method => :delete %> |

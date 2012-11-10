@@ -18,6 +18,7 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
+    #@system("open #{@user.themesong_url}")
   end
 
   def edit

@@ -4,6 +4,7 @@ class CreateUsers < ActiveRecord::Migration
       t.string :name
       t.string :mac
       t.string :themesong_url
+      t.string :rdio_user
       t.timestamps
     end
   end
