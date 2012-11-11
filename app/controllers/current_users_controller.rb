@@ -43,7 +43,7 @@ class CurrentUsersController < ApplicationController
     ui_users = {}
 
     users.each do |u|
-      ui_users[u.mac] = {:displayname => u.name, :rdiouserid => u.rdio_user}
+      ui_users[u.mac] = {:userid => u.id, :displayname => u.name, :rdiouserid => u.rdio_user}
     end
 
     ui_users.to_json
