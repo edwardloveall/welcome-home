@@ -2,89 +2,87 @@
 <html>
 <head>
   <title>Welcome Home</title>
-  <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-  <script src="js/jquery.rdio.js"></script>
-  <script src="js/rdioplayer.js"></script>
-  <script src="js/bootstrap.js"></script>
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script> -->
+  <script src="assets/jquery.min.js"></script>
+  <script src="assets/jquery.rdio.js"></script>
+  <script src="assets/rdioplayer.js"></script>
   <script>
-      /*var interval = setInterval(function () {
-          console.log("sup");
-      }, 1000);*/
+      var interval = setInterval(function () {
+        updateUsers(users_json);
+      }, 1000);
 
       var users = [];
-      var pathWithUser = "oneuser.txt";
-      var pathWithoutUser = "nouser.txt";
-      var pathWithThreeUsers = "threeusers.txt";
+      var users_json = "/current_users"
 
       function updateUsers(path) {
-          $.ajax({
-              url: path,
-              dataType: "json"
-          }).done(function (data) {
-              //Adding users
-              for (var i in data) {
-                  //Check if we have this user already
-                  //TODO... account for users who already have their MAC address in the array but then come back with updated rdiouserid info
-                  if (!users[i]) {
-                      console.log("Adding user with Mac: " + i);
-                      //Check if the user has a rdiouserid, otherwise just add an empty object with the Mac address as the key
-                      if (data[i].displayname && data[i].rdiouserid) {
-                          users[i] = { "displayname": data[i].displayname, "rdiouserid": data[i].rdiouserid };
-                          handleNewRdioUser(data[i].rdiouserid);
-                      }
-                      else
-                          users[i] = {"displayname":"", "rdiouserid":""};
-                  }
+        $.ajax({
+          url: path,
+          dataType: "json"
+        }).done(function (data) {
+          //Adding users
+          for (var i in data) {
+            //Check if we have this user already
+            //TODO... account for users who already have their MAC address in the array but then come back with updated rdiouserid info
+            if (!users[i]) {
+              console.log("Adding user with Mac: " + i);
+              //Check if the user has a rdiouserid, otherwise just add an empty object with the Mac address as the key
+              if (data[i].displayname && data[i].rdiouserid) {
+                users[i] = { "displayname": data[i].displayname, "rdiouserid": data[i].rdiouserid };
+                handleNewRdioUser(data[i].rdiouserid);
               }
+            else
+              users[i] = {"displayname":"", "rdiouserid":""};
+            }
+          }
 
-              //Removing users
-              for (var i in users) {
-                  if (!data[i]) {
-                      console.log("Removing user with mac: " + i);
-                      if (users[i].rdiouserid != "")
-                        handleRemovedRdioUser(users[i].rdiouserid);
-                      delete users[i];
-                  }
+          //Removing users
+          for (var i in users) {
+            if (!data[i]) {
+              console.log("Removing user with mac: " + i);
+              if (users[i].rdiouserid != "")
+                handleRemovedRdioUser(users[i].rdiouserid);
+                delete users[i];
               }
+            }
 
-              updateUsersView();
-          });
+          updateUsersView();
+        });
       }
 
       function updateUsersView() {
-          $("#userList").empty();
-          for (var i in users) {
-              if(users[i].rdiouserid != "")
-                $("#userList").append("<li>" + users[i].displayname + " (MAC: " + i + ")</li>");
-              else
-                  $("#userList").append("<li><em>Unknown User (MAC: " + i + ")</em><a href='#' class='btn btn-info'>Link User</a></li>");
-          }
+        $("#userList").empty();
+        for (var i in users) {
+          var user_element = document.createElement('div');
+          var front_face = document.createElement('div');
+          var back_face = document.createElement('div');
+          var name = document.createElement('h2');
+          var nameText = document.createTextNode(users[i].displayname);
+          user_element.classList.add("user");
+          front_face.classList.add("font-face");
+          back_face.classList.add("back-face");
 
-          if (Object.keys(users).length > 0) {
-              $("#divUsers").show();
-              $("#divPlayer").show();
-              $("#divSpinner").hide();
-          } else {
-              $("#divUsers").hide();
-              $("#divPlayer").hide();
-              $("#divSpinner").show();
-          }
+          name.appendChild(nameText);
+          back_face.appendChild(name);
+          user_element.appendChild(front_face);
+          user_element.appendChild(back_face);
+
+          if(users[i].rdiouserid != "")
+            $("#userList").append(user_element);
+          else
+            $("#userList").append("<li><em>Unknown User (MAC: " + i + ")</em><a href='#' class='btn btn-info'>Link User</a></li>");
+        }
+
+        if (Object.keys(users).length) {
+          $("#divUsers").show();
+          $("#divPlayer").show();
+          $("#divSpinner").hide();
+        } else {
+          $("#divUsers").hide();
+          $("#divPlayer").hide();
+          $("#divSpinner").show();
+        }
       }
 
-      $(document).ready(function () {
-
-          $("#btnReceiveThreeUsers").click(function () {
-              updateUsers(pathWithThreeUsers);
-          })
-          $("#btnReceiveOneUser").click(function () {
-              updateUsers(pathWithUser);
-          })
-          $("#btnReceiveNoUsers").click(function () {
-              updateUsers(pathWithoutUser);
-          })
-      });
-    
       function handleNewRdioUser(rdiouserid)
       {
         //do some magic with the userid and come back with a song id
@@ -106,9 +104,9 @@
 </head>
 <body>
 <h1>Welcome Home!</h1>
-<a class="btn btn-primary" id="btnReceiveThreeUsers">Receive 3 Users</a>
-<a class="btn btn-primary" id="btnReceiveOneUser">Receive 1 User</a>
-<a class="btn btn-primary" id="btnReceiveNoUsers">Receive No Users</a>
+<a id="btnReceiveThreeUsers">Receive 3 Users</a>
+<a id="btnReceiveOneUser">Receive 1 User</a>
+<a id="btnReceiveNoUsers">Receive No Users</a>
 
 <div style="padding:20px;">
     <div id="divUsers" style="display:none">
