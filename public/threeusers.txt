@@ -1,0 +1,5 @@
+﻿{
+"01-00-00-00-00-00":{"displayname":"Adam Ribaudo", "rdiouserid":"s3203634"},
+"02-00-00-00-00-00":{"displayname":"Steve Nixon", "rdiouserid":"s2056408"},
+"03-00-00-00-00-00":{}
+}

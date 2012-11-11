@@ -1,0 +1,12 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  @include radial-gradient(circle, #FAFAFA, #DBDBDB);
+  font: $font-size-text $base-sans;
+}
+
+div#container {
+  padding: 50px;
+}

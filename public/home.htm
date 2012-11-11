@@ -1,0 +1,221 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Welcome Home</title>
+  <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+  <script src="js/jquery.rdio.js"></script>
+  <script src="js/rdioplayer.js"></script>
+  <script src="js/bootstrap.js"></script>
+  <script>
+      /*var interval = setInterval(function () {
+          console.log("sup");
+      }, 1000);*/
+
+      var users = {};
+      
+      var pathWithUser = "oneuser.txt";
+      var pathWithoutUser = "nouser.txt";
+      var pathWithThreeUsers = "threeusers.txt";
+
+      function updateUsers(path) {
+          $.ajax({
+              url: path,
+              dataType: "json"
+          }).done(function (data) {
+              //Adding users
+              for (var i in data) {
+                  //Check if we have this user already
+                  //TODO... account for users who already have their MAC address in the array but then come back with updated rdiouserid info
+                  if (!users[i]) {
+                      console.log("Adding user with Mac: " + i);
+                      //Check if the user has a rdiouserid, otherwise just add an empty object with the Mac address as the key
+                      if (data[i].rdiouserid) {
+                          users[i] = { "displayname": data[i].displayname, "rdiouserid": data[i].rdiouserid };
+                      }
+                      else
+                          users[i] = { "displayname": "", "rdiouserid": "" };
+
+                      handleNewUser(users[i], i);
+                  }
+              }
+
+              //Removing users
+              for (var i in users) {
+                  if (!data[i]) {
+                      console.log("Removing user with mac: " + i);
+                      handleRemoveUser(users[i], i);
+                      delete users[i];
+                  }
+              }
+          });
+      }
+
+      function updateUserSpinner() {
+          if (Object.keys(users).length > 0) {
+              $("#divUsers").show();
+              $("#divPlayer").show();
+              $("#divSpinner").hide();
+          } else {
+              $("#divUsers").hide();
+              $("#divPlayer").hide();
+              $("#divSpinner").show();
+          }
+      }
+
+      $(document).ready(function () {
+
+          $("#btnReceiveThreeUsers").click(function () {
+              updateUsers(pathWithThreeUsers);
+          })
+          $("#btnReceiveOneUser").click(function () {
+              updateUsers(pathWithUser);
+          })
+          $("#btnReceiveNoUsers").click(function () {
+              updateUsers(pathWithoutUser);
+          })
+      });
+
+      function handleNewUser(user, macaddress) {
+          //If this user has a rdiouserid, add their tracks to the playlist
+           console.log("handling: " + macaddress);
+          if (user.rdiouserid != "") {
+              $("#userList").append("<li id='" + macaddress + "'>" + user.displayname + " (MAC: " + macaddress + ")</li>");
+              handleNewRdioUser(user.rdiouserid);
+          } else {
+          //otherwise, add an unknown user
+              $("#userList").append("<li id='" + macaddress + "'><em>Unknown User (MAC: " + macaddress + ")</em><a href='#' class='btn btn-info'>Link User</a></li>");
+          }
+
+          $("#" + macaddress).css("opacity", .25).animate({
+              opacity: 1,
+              right: '+=100'
+          }, 1000);
+
+          updateUserSpinner();
+      }
+
+    
+      function handleNewRdioUser(rdiouserid) {
+        //Do some magic with the userid and come back with songs
+
+          //this is just to mock different users joining
+          var path;
+          if (rdiouserid == "s3203634")
+              path = "userathreetracks.txt";
+          else if (rdiouserid == "s2056408")
+              path = "userbtwotracks.txt";
+
+          $.ajax({
+              url: path,
+              dataType: "json",
+              success: function (data) {
+                  console.log("handle new user call back returned");
+                  for (var i in data) {
+                      playlist.push(data[i]);
+                      if (isFirstUser && currentPlayState == STOPPED) {
+                          //Only auto-play the playlist if this is the first user joining
+                          isFirstUser = false;
+                          $("#api").rdio().play(playlist[0].trackid);
+                      }
+                  }
+
+                  updatePlaylistView();
+              },
+              error: function (xhr, status) {
+                  console.log("error: " + status);
+              }
+
+          })
+      }
+
+      function handleRemoveUser(user, macaddress) {
+          $("#" + macaddress).animate({
+              opacity: 0.25,
+              left: '+=50',
+              height: 'toggle'
+          }, 1000, function () { $(this).remove(); updateUserSpinner(); });
+
+          if (user.rdiouserid != "") {
+              handleRemovedRdioUser(user.rdiouserid)
+          }
+      }
+
+      function  handleRemovedRdioUser(rdiouserid) {
+          var indexesToRemove = [];
+
+          //remove this user's tracks
+          for (i in playlist) {
+              if (playlist[i].userid == rdiouserid) {
+                  if (i == currentPlaylistIndex) $('#api').rdio().stop();
+                  //keep track of which tracks to remove
+                  indexesToRemove.push(i);
+              }
+          }
+          //remove the tracks from the array
+          for (i in indexesToRemove) {
+              playlist.splice(indexesToRemove[i]-i, 1);
+          }
+
+          updatePlaylistView();
+    }
+
+    function updatePlaylistView() {
+        $("#ulPlaylist").empty();
+        for (i in playlist) {
+            if (i == currentPlaylistIndex)
+                //Style if this is the current song
+                $("#ulPlaylist").append("<li><strong>" + playlist[i].name + "</strong> from User: " + playlist[i].userid + "</li>");
+            else {
+                $("#ulPlaylist").append("<li>" + playlist[i].name + "from User: " + playlist[i].userid + "</li>");
+            }
+        }
+    }
+
+  </script>
+</head>
+<body>
+<h1>Welcome Home!</h1>
+<div>
+    <a class="btn btn-primary" id="btnReceiveThreeUsers">Receive 3 Users</a>
+    <a class="btn btn-primary" id="btnReceiveOneUser">Receive 1 User</a>
+    <a class="btn btn-primary" id="btnReceiveNoUsers">Receive No Users</a>
+</div>
+
+<div style="padding:20px;">
+    <div id="divUsers" style="display:none">
+        <span>Current Users:</span>
+        <ul id="userList"></ul>
+    </div>
+    <div id="divSpinner">
+        Waiting for users...
+        <img src="img/ajax-loader.gif" />
+    </div>
+</div>
+  <div id="api"></div>
+
+  <div id="divPlayer">
+      <img id="art" src="" height="200" width="200" style="float:left;margin-right:20px;">
+      <div>
+        <div><b>Track: </b><span id="track"></span></div>
+        <div><b>Album: </b><span id="album"></span></div>
+        <div><b>Artist: </b><span id="artist"></span></div>
+        <div><b>Position: </b>
+          <span style="display:inline-block;width:200px;border:1px solid black;">
+            <span id="position" style="display:inline-block;background-color:#666">&nbsp;</span>
+          </span></div>
+        <div>
+          <button id="previous">&lt;&lt;</button>
+          <button id="play">|&gt;</button>
+          <button id="pause">||</button>
+          <button id="next">&gt;&gt;</button>
+        </div>
+      </div>
+      <div id="playlist" >
+      <ul id="ulPlaylist">
+        
+      </ul>
+      </div>
+  </div>
+</body>
+</html>

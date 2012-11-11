@@ -1,0 +1,75 @@
+section.users {
+  div.user {
+    $size: 200px;
+
+    display: inline-block;
+    height: $size;
+    margin: 0 20px 20px 0;
+    position: relative;
+    width: $size;
+
+    -webkit-perspective: 600px;
+
+    > div {
+      border-radius: 5px;
+      left: 0;
+      height: $size;
+      position: absolute;
+      top: 0;
+      width: $size;
+
+      @include box-shadow(0 2px 5px rgba(0,0,0,0.5));
+
+      -webkit-transform-style: preserve-3d;
+      -webkit-backface-visibility: hidden;
+      -webkit-transition: all .4s ease-in-out;
+    }
+
+    div.font-face {
+      z-index: 100;
+      @include background(url(/assets/note.svg) no-repeat center center, linear-gradient(#FFFFFF, #DFDFDF));
+      background-size: 150px, 100%;
+      -webkit-transform: rotateX(0deg) rotateY(0deg);
+    }
+
+    div.back-face {
+      background: transparent url(/assets/low_contrast_linen.png);
+      text-align: center;
+      z-index: 1;
+      -webkit-transform: rotateY(-180deg);
+    }
+
+    &:hover {
+      div.font-face {
+        -webkit-transform: rotateY(180deg);
+      }
+
+      div.back-face {
+        z-index: 200;
+        -webkit-transform: rotateX(0deg) rotateY(0deg);
+      }
+    }
+
+    h2 {
+      border-radius: 5px;
+      @include box-sizing(border-box);
+      color: $color-white;
+      font-size: $font-size-large;
+      font-weight: 700;
+      margin: 1em 0;
+      padding: golden-ratio($font-size-large, -2) 0;
+      text-align: center;
+    }
+
+    a.edit {
+      font-size: golden-ratio($font-size-large, 1);
+      @extend .cta-button
+    }
+  }
+}
+
+section.global.actions {
+  a {
+    @extend .cta-button;
+  }
+}

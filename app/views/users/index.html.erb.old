@@ -1,0 +1,20 @@
+<% title "Users" %>
+
+<!-- <section class="global actions">
+  <%= link_to "New User", new_user_path %>
+</section> -->
+
+<section class="users">
+  <% @users.each do |user| %>
+    <div class="user">
+      <h2><%= user.name %></h2>
+      <div class="info">
+        <p class="mac-address"><%= user.mac %></p>
+        <small class="theme-url"><%= user.themesong_url %></small>
+        <div class="actions">
+          <%= link_to "Edit", edit_user_path(user) %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</section>

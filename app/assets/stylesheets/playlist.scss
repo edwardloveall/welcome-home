@@ -1,0 +1,68 @@
+@mixin cell {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 13em;
+}
+
+section.playlist {
+  background: $color-white;
+  border: 1px solid #a6a6a6;
+  @include box-shadow(0 0 20px rgba(0,0,0,0.3));
+  font-size: 18px;
+  height: 300px;
+  padding: golden-ratio(18px, -1);
+
+  @include position(fixed, 0 0px 0px 0px);
+
+  li, div.playlist-header {
+    font-weight: 700;
+    padding: golden-ratio(18px, -2);
+    padding-left: 50px;
+    position: relative;
+
+    span {
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 13em;
+
+      &.play-pause {
+        display: none;
+        background: transparent url(/assets/play-pause.png) no-repeat;
+        background-position: 0px 0px;
+        height: 21px;
+        width: 21px;
+
+        @include position(absolute, 6px 0 0 5px);
+
+        &.playing {
+          background-position: 0px -29px ;
+        }
+      }
+    }
+
+    &:hover {
+      background: rgba(0,0,0,0.05);
+
+      span.play-pause {
+        display: inline-block;
+      }
+    }
+
+    &.current {
+      background: $color-blue;
+      color: $color-white;
+    }
+  }
+
+  div.playlist-header:hover {
+    background: transparent;
+  }
+}
+
+section.fake-edit {
+  display: none;
+}
