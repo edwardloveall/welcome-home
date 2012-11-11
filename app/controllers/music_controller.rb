@@ -7,8 +7,9 @@ class MusicController < ApplicationController
   RDIO_CONSUMER_SECRET = 'GjMfpnZf7Z'
 
   def heavyrotation
-    
+
     user = params[:rdiouserid]
+    track_limit = params[:limit]
     access_token = session[:at]
     access_token_secret = session[:ats]
     
@@ -33,6 +34,10 @@ class MusicController < ApplicationController
           track_md = rdio.call('get', {:keys => rand_track})['result'][rand_track]
           @playlist << {:user_id => user_id, :user_name => @username, :track_id => track_md['key'], :track_name => track_md['name'], :track_artist => track_md['albumArtist']}
           puts track_md
+
+          if @playlist.length == track_limit.to_i
+            break
+          end
         end
 
         # Return all track metadata
@@ -40,7 +45,9 @@ class MusicController < ApplicationController
           format.html
           format.json { render :json => @playlist }
         end
-    rescue
+    rescue Exception => e
+      puts e.message
+
       respond_to do |format|
         format.html { 
           flash.now[:error] = "There was a problem with the RDIO HTTP request."
