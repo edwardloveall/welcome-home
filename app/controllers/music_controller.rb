@@ -1,3 +1,5 @@
+require 'rdio'
+
 class MusicController < ApplicationController
   respond_to :json, :html
 

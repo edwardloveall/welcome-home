@@ -40,8 +40,6 @@ $(document).ready(function() {
   }
 
   function handleNewUser(user, macaddress) {
-    console.log("handleNewUser");
-
     var user_element = document.createElement('div');
     var front_face = document.createElement('div');
     var back_face = document.createElement('div');
@@ -54,6 +52,7 @@ $(document).ready(function() {
     front_face.classList.add("font-face");
     back_face.classList.add("back-face");
     edit.classList.add("edit");
+    // edit.href = "/users/" + user.userid + "edit";
 
     if(user.rdiouserid != "") {
       var nameText = document.createTextNode(user.displayname);
@@ -101,11 +100,7 @@ $(document).ready(function() {
     //Do some magic with the userid and come back with songs
 
       //this is just to mock different users joining
-      var path;
-      if (rdiouserid == "934234")
-          path = "/userathreetracks.txt";
-      else if (rdiouserid == "12349875")
-          path = "/userbtwotracks.txt";
+      var path = "/heavyrotation.json?rdiouserid=" + rdiouserid;
 
       $.ajax({
           url: path,
@@ -159,9 +154,9 @@ $(document).ready(function() {
       var artist = document.createElement('span');
       var user_name = document.createElement('span');
 
-      var name_text = document.createTextNode(playlist[i].name)
-      var artist_text = document.createTextNode(playlist[i].artist)
-      var user_name_text = document.createTextNode(playlist[i].userid)
+      var name_text = document.createTextNode(playlist[i].track_name)
+      var artist_text = document.createTextNode(playlist[i].track_artist)
+      var user_name_text = document.createTextNode(playlist[i].user_name)
 
       song_element.classList.add("track");
       play_pause.classList.add("play-pause");
@@ -169,7 +164,7 @@ $(document).ready(function() {
       artist.classList.add("artist");
       user_name.classList.add("user-name")
 
-      song_element.setAttribute("data-track-id", playlist[i].trackid);
+      song_element.setAttribute("data-track-id", playlist[i].track_id);
 
       if (i == currentPlaylistIndex) {
         //Style if this is the current song
