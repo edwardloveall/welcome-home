@@ -20,10 +20,10 @@ $(document).ready(function() {
           //Check if the user has a rdiouserid, otherwise just add an empty object with the Mac address as the key
           if (data[i].displayname && data[i].rdiouserid) {
             users[i] = { "displayname": data[i].displayname, "rdiouserid": data[i].rdiouserid };
-            handleNewRdioUser(data[i].rdiouserid);
           }
         else
           users[i] = {"displayname":"", "rdiouserid":""};
+          handleNewUser(users[i], i);
         }
       }
 
@@ -32,55 +32,68 @@ $(document).ready(function() {
         if (!data[i]) {
           console.log("Removing user with mac: " + i);
           if (users[i].rdiouserid != "")
-            handleRemovedRdioUser(users[i].rdiouserid);
+            handleRemoveUser(users[i], i);
             delete users[i];
           }
         }
-
-      updateUsersView();
     });
   }
 
-  function updateUsersView() {
-    $("section.users").empty();
-    for (var i in users) {
-      var user_element = document.createElement('div');
-      var front_face = document.createElement('div');
-      var back_face = document.createElement('div');
-      var name = document.createElement('h2');
-      var edit = document.createElement('a');
-      var edit_text = document.createTextNode('Edit')
+  function handleNewUser(user, macaddress) {
+    console.log("handleNewUser");
 
-      user_element.classList.add("user");
-      front_face.classList.add("font-face");
-      back_face.classList.add("back-face");
-      edit.classList.add("edit");
+    var user_element = document.createElement('div');
+    var front_face = document.createElement('div');
+    var back_face = document.createElement('div');
+    var name = document.createElement('h2');
+    var edit = document.createElement('a');
+    var edit_text = document.createTextNode('Edit')
 
-      if(users[i].rdiouserid != "")
-        var nameText = document.createTextNode(users[i].displayname);
-      else {
-        var nameText = document.createTextNode(i);
-        name.classList.add('mac-address');
-      }
+    user_element.id = macaddress;
+    user_element.classList.add("user");
+    front_face.classList.add("font-face");
+    back_face.classList.add("back-face");
+    edit.classList.add("edit");
 
-      edit.appendChild(edit_text);
-      name.appendChild(nameText);
-      back_face.appendChild(name);
-      back_face.appendChild(edit);
-      user_element.appendChild(front_face);
-      user_element.appendChild(back_face);
-
-      $("section.users").append(user_element);
+    if(user.rdiouserid != "") {
+      var nameText = document.createTextNode(user.displayname);
+      handleNewRdioUser(user.rdiouserid);
+    } else {
+      var nameText = document.createTextNode(macaddress);
     }
 
-    if (Object.keys(users).length) {
-      $("#divUsers").show();
-      $("#divPlayer").show();
-      $("#divSpinner").hide();
-    } else {
-      $("#divUsers").hide();
-      $("#divPlayer").hide();
-      $("#divSpinner").show();
+    edit.appendChild(edit_text);
+    name.appendChild(nameText);
+    back_face.appendChild(name);
+    back_face.appendChild(edit);
+    user_element.appendChild(front_face);
+    user_element.appendChild(back_face);
+
+    $("section.users").append(user_element);
+
+    $(document.getElementById(macaddress))
+      .css("opacity", 0).css("top", -20)
+      .animate({
+      opacity: 1,
+      top: 0
+    }, 500);
+
+    // updateUserSpinner();
+  }
+
+  function handleRemoveUser(user, macaddress) {
+    $(document.getElementById(macaddress))
+      .animate({
+      opacity: 0,
+      top: -20
+    }, 500, function() {
+      $(this)
+        .remove();
+      // updateUserSpinner();
+    });
+
+    if (user.rdiouserid != "") {
+      handleRemovedRdioUser(user.rdiouserid)
     }
   }
 
