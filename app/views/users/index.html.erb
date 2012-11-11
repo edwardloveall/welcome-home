@@ -1,20 +1,27 @@
 <% title "Users" %>
 
-<!-- <section class="global actions">
-  <%= link_to "New User", new_user_path %>
-</section> -->
+<section class="users"><div class="user"><div class="font-face"></div><div class="back-face"><h2>Edward Loveall</h2><a class="edit">Edit</a></div></div><div class="user"><div class="font-face"></div><div class="back-face"><h2 class="mac-address">D4:20:6D:2E:66:80</h2><a class="edit">Edit</a></div></div></section>
 
-<section class="users">
-  <% @users.each do |user| %>
-    <div class="user">
-      <h2><%= user.name %></h2>
-      <div class="info">
-        <p class="mac-address"><%= user.mac %></p>
-        <small class="theme-url"><%= user.themesong_url %></small>
-        <div class="actions">
-          <%= link_to "Edit", edit_user_path(user) %>
-        </div>
-      </div>
-    </div>
-  <% end %>
+<section class="playlist">
+  <ul>
+    <li class="track current">
+      <span class="play-pause playing"></span>
+      <span class="name">The Bends</span>
+      <span class="artist">Radiohead</span>
+    </li>
+    <li class="track">
+      <span class="play-pause"></span>
+      <span class="name">Rusty Nails</span>
+      <span class="artist">Moderat</span>
+    </li>
+    <li class="track">
+      <span class="play-pause"></span><span class="name">Ditcaphone's Lament</span>
+      <span class="artist">Tycho</span>
+    </li>
+    <li class="track">
+      <span class="play-pause"></span>
+      <span class="name">Do The Astral Plane</span>
+      <span class="artist">Flying Lotus</span>
+    </li>
+  </ul>
 </section>
