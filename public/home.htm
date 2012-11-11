@@ -32,10 +32,11 @@
                       //Check if the user has a rdiouserid, otherwise just add an empty object with the Mac address as the key
                       if (data[i].rdiouserid) {
                           users[i] = { "displayname": data[i].displayname, "rdiouserid": data[i].rdiouserid };
-                          handleNewRdioUser(data[i].rdiouserid);
                       }
                       else
-                          users[i] = {"displayname":"", "rdiouserid":""};
+                          users[i] = { "displayname": "", "rdiouserid": "" };
+
+                      handleNewUser(users[i], i);
                   }
               }
 
@@ -43,25 +44,14 @@
               for (var i in users) {
                   if (!data[i]) {
                       console.log("Removing user with mac: " + i);
-                      if (users[i].rdiouserid != "")
-                        handleRemovedRdioUser(users[i].rdiouserid);
+                      handleRemoveUser(users[i], i);
                       delete users[i];
                   }
               }
-
-              updateUsersView();
           });
       }
 
-      function updateUsersView() {
-          $("#userList").empty();
-          for (var i in users) {
-              if(users[i].rdiouserid != "")
-                $("#userList").append("<li>" + users[i].displayname + " (MAC: " + i + ")</li>");
-              else
-                  $("#userList").append("<li><em>Unknown User (MAC: " + i + ")</em><a href='#' class='btn btn-info'>Link User</a></li>");
-          }
-
+      function updateUserSpinner() {
           if (Object.keys(users).length > 0) {
               $("#divUsers").show();
               $("#divPlayer").show();
@@ -85,6 +75,25 @@
               updateUsers(pathWithoutUser);
           })
       });
+
+      function handleNewUser(user, macaddress) {
+          //If this user has a rdiouserid, add their tracks to the playlist
+           console.log("handling: " + macaddress);
+          if (user.rdiouserid != "") {
+              $("#userList").append("<li id='" + macaddress + "'>" + user.displayname + " (MAC: " + macaddress + ")</li>");
+              handleNewRdioUser(user.rdiouserid);
+          } else {
+          //otherwise, add an unknown user
+              $("#userList").append("<li id='" + macaddress + "'><em>Unknown User (MAC: " + macaddress + ")</em><a href='#' class='btn btn-info'>Link User</a></li>");
+          }
+
+          $("#" + macaddress).css("opacity", .25).animate({
+              opacity: 1,
+              right: '+=100'
+          }, 1000);
+
+          updateUserSpinner();
+      }
 
     
       function handleNewRdioUser(rdiouserid) {
@@ -118,6 +127,18 @@
               }
 
           })
+      }
+
+      function handleRemoveUser(user, macaddress) {
+          $("#" + macaddress).animate({
+              opacity: 0.25,
+              left: '+=50',
+              height: 'toggle'
+          }, 1000, function () { $(this).remove(); updateUserSpinner(); });
+
+          if (user.rdiouserid != "") {
+              handleRemovedRdioUser(user.rdiouserid)
+          }
       }
 
       function  handleRemovedRdioUser(rdiouserid) {
