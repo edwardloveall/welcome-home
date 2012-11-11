@@ -46,7 +46,7 @@ class CurrentUsersController < ApplicationController
       ui_users[u.mac] = {:displayname => u.name, :rdiouserid => u.rdio_user}
     end
 
-    ui_users
+    ui_users.to_json
   end
 
   def index
