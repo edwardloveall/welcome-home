@@ -1,0 +1,25 @@
+$base-sans: 'runda', Hevetica, sans-serif;
+
+$color-very-light-grey: rgb(235, 235, 235);
+$color-light-grey: #999;
+$color-white: white;
+$color-black: black;
+
+$color-red: #FC453A;
+
+$font-size-large: 40px;
+$font-size-text: golden-ratio($font-size-large, -2);
+
+
+.cta-button {
+  $color: #EEEEEE;
+  border: 1px solid darken(#EEEEEE, 26%);
+  border-radius: 4px;
+  @include box-shadow(inset 0 0 1px rgba(255, 255, 255, 1));
+  color: darken($color, 60%);
+  display: inline-block;
+  font-weight: bold;
+  @include linear-gradient($color, darken($color, 7%));
+  padding: .3em 1em;
+  text-decoration: none;
+}

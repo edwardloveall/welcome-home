@@ -1,0 +1,55 @@
+section.users {
+  @include clearfix;
+  margin-top: 20px;
+  $panel-width: 350px;
+
+  div.user {
+    position: relative;
+    width: 350px;
+
+    h2 {
+      border-radius: 5px;
+      @include box-sizing(border-box);
+      color: darken($color-red, 40%);
+      font-size: $font-size-large;
+      font-weight: 700;
+      @include linear-gradient($color-red, darken($color-red, 10%));
+      padding: golden-ratio($font-size-large, -3) 20px;
+      position: absolute;
+      text-align: center;
+      width: $panel-width;
+    }
+
+    div.info {
+      background: $color-very-light-grey;
+      border: 1px solid $color-light-grey;
+      border-radius: 5px;
+      @include box-shadow(inset 0 0 0 1px rgba(255, 255, 255, 1));
+      margin: 0 auto;
+      padding: 80px 20px 20px;
+      width: 280px;
+
+      p.mac-address {
+        color: $color-light-grey;
+        margin-bottom: golden-ratio($font-size-text, 1);
+      }
+
+      div.actions {
+        a {
+          color: $color-light-grey;
+          text-decoration: none;
+
+          &:hover {
+            color: $color-black;
+          }
+        }
+      }
+    }
+  }
+}
+
+section.global.actions {
+  a {
+    @extend .cta-button;
+  }
+}
