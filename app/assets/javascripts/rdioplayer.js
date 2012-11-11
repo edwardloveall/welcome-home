@@ -8,6 +8,14 @@ var BUFFERING = 3;
 var currentPlayState = STOPPED;
 var isFirstUser = true;
 
+function update_play_icon () {
+  if (currentPlayState == PLAYING || currentPlayState == BUFFERING) {
+    $('li.track.current span.play-pause').addClass('playing');
+  } else {
+    $('li.track.current span.play-pause').removeClass('playing');
+  };
+}
+
 $(document).ready(function () {
     $('#api').bind('ready.rdio', function () {
         //$(this).rdio().play('a171827');
@@ -30,11 +38,7 @@ $(document).ready(function () {
         if (playState == PAUSED || playState == 4) { // paused
             currentPlayState = PAUSED;
             console.log("player state: paused");
-            $('#play').show();
-            $('#pause').hide();
         } else if (playState == PLAYING) { // playing
-            $('#play').hide();
-            $('#pause').show();
             console.log("player state: playing");
             currentPlayState = PLAYING;
         }
@@ -45,6 +49,7 @@ $(document).ready(function () {
             currentPlayState = STOPPED;
             console.log("player state: stopped");
         }
+        update_play_icon();
     });
     // this is a valid playback token for localhost.
     // but you should go get your own for your own domain.

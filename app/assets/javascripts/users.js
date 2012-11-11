@@ -84,20 +84,107 @@ $(document).ready(function() {
     }
   }
 
-  function handleNewRdioUser(rdiouserid)
-  {
-    //do some magic with the userid and come back with a song id
-    var songid = "a171827"
+  function handleNewRdioUser(rdiouserid) {
+    //Do some magic with the userid and come back with songs
 
-    $('#api').rdio().play(songid);
+      //this is just to mock different users joining
+      var path;
+      if (rdiouserid == "934234")
+          path = "/userathreetracks.txt";
+      else if (rdiouserid == "12349875")
+          path = "/userbtwotracks.txt";
+
+      $.ajax({
+          url: path,
+          dataType: "json",
+          success: function (data) {
+              console.log("handle new user call back returned");
+              for (var i in data) {
+                  playlist.push(data[i]);
+                  if (isFirstUser && currentPlayState == STOPPED) {
+                      //Only auto-play the playlist if this is the first user joining
+                      isFirstUser = false;
+                      $("#api").rdio().play(playlist[0].trackid);
+                  }
+              }
+
+              updatePlaylistView();
+          },
+          error: function (xhr, status) {
+              console.log("error: " + status);
+          }
+
+      })
   }
 
-  function  handleRemovedRdioUser(rdiouserid)
-  {
-    //stop playing this user's tracks
+  function  handleRemovedRdioUser(rdiouserid) {
+      var indexesToRemove = [];
 
-    //If this was the last person with an rdioid... stop all playback
-    //if(Object.keys(users).length == 1)
-    $('#api').rdio().stop();
+      //remove this user's tracks
+      for (i in playlist) {
+          if (playlist[i].userid == rdiouserid) {
+              if (i == currentPlaylistIndex) $('#api').rdio().stop();
+              //keep track of which tracks to remove
+              indexesToRemove.push(i);
+          }
+      }
+      //remove the tracks from the array
+      for (i in indexesToRemove) {
+          playlist.splice(indexesToRemove[i]-i, 1);
+      }
+
+      updatePlaylistView();
+  }
+
+
+  function updatePlaylistView() {
+    $("section.playlist ul").empty();
+    for (i in playlist) {
+      var song_element = document.createElement('li');
+      var play_pause = document.createElement('span');
+      var name = document.createElement('span');
+      var artist = document.createElement('span');
+      var user_name = document.createElement('span');
+
+      var name_text = document.createTextNode(playlist[i].name)
+      var artist_text = document.createTextNode(playlist[i].artist)
+      var user_name_text = document.createTextNode(playlist[i].userid)
+
+      song_element.classList.add("track");
+      play_pause.classList.add("play-pause");
+      name.classList.add("name");
+      artist.classList.add("artist");
+      user_name.classList.add("user-name")
+
+      song_element.setAttribute("data-track-id", playlist[i].trackid);
+
+      if (i == currentPlaylistIndex) {
+        //Style if this is the current song
+        song_element.classList.add('current');
+      }
+
+      user_name.appendChild(user_name_text);
+      artist.appendChild(artist_text);
+      name.appendChild(name_text);
+      song_element.appendChild(play_pause);
+      song_element.appendChild(name);
+      song_element.appendChild(artist);
+      song_element.appendChild(user_name);
+
+      $("section.playlist ul").append(song_element);
+    }
+
+    $('section.playlist li').click(function() {
+      if ((currentPlayState == PLAYING || currentPlayState == BUFFERING) && currentPlaylistIndex == $(this).index()) {
+        $("#api").rdio().pause();
+      } else {
+        var song_id = $(this).data("track-id");
+        $("#api").rdio().play(song_id);
+        currentPlaylistIndex = $(this).index();
+      }
+      updatePlaylistView();
+    });
+
+    update_play_icon();
   }
 });
