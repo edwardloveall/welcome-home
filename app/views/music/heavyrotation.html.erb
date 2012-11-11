@@ -1,0 +1,15 @@
+<% if @username.nil? %>
+  <a href="/login">Log into Rdio</a>
+<% else %>
+  <%= image_tag @avatar %>
+  <h1>Username:  <%= @username %></h1>
+  
+  <ul>
+  <% @playlist.each do |track| %>
+  	<li>"<%= track[:track_name] %>", by <%= track[:track_artist] %></li>
+  <% end %>
+  </ul>
+
+<h2>JSON</h2>
+  <%= @playlist.to_json %>
+<% end %>
