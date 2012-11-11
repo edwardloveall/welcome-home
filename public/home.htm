@@ -12,7 +12,8 @@
           console.log("sup");
       }, 1000);*/
 
-      var users = [];
+      var users = {};
+      
       var pathWithUser = "oneuser.txt";
       var pathWithoutUser = "nouser.txt";
       var pathWithThreeUsers = "threeusers.txt";
@@ -29,7 +30,7 @@
                   if (!users[i]) {
                       console.log("Adding user with Mac: " + i);
                       //Check if the user has a rdiouserid, otherwise just add an empty object with the Mac address as the key
-                      if (data[i].displayname && data[i].rdiouserid) {
+                      if (data[i].rdiouserid) {
                           users[i] = { "displayname": data[i].displayname, "rdiouserid": data[i].rdiouserid };
                           handleNewRdioUser(data[i].rdiouserid);
                       }
@@ -84,31 +85,81 @@
               updateUsers(pathWithoutUser);
           })
       });
+
     
-      function handleNewRdioUser(rdiouserid)
-      {
-        //do some magic with the userid and come back with a song id
-        var songid = "a171827"
+      function handleNewRdioUser(rdiouserid) {
+        //Do some magic with the userid and come back with songs
 
-        $('#api').rdio().play(songid);
+          //this is just to mock different users joining
+          var path;
+          if (rdiouserid == "s3203634")
+              path = "userathreetracks.txt";
+          else if (rdiouserid == "s2056408")
+              path = "userbtwotracks.txt";
+
+          $.ajax({
+              url: path,
+              dataType: "json",
+              success: function (data) {
+                  console.log("handle new user call back returned");
+                  for (var i in data) {
+                      playlist.push(data[i]);
+                      if (isFirstUser && currentPlayState == STOPPED) {
+                          //Only auto-play the playlist if this is the first user joining
+                          isFirstUser = false;
+                          $("#api").rdio().play(playlist[0].trackid);
+                      }
+                  }
+
+                  updatePlaylistView();
+              },
+              error: function (xhr, status) {
+                  console.log("error: " + status);
+              }
+
+          })
       }
 
-      function  handleRemovedRdioUser(rdiouserid)
-      {
-        //stop playing this user's tracks
+      function  handleRemovedRdioUser(rdiouserid) {
+          var indexesToRemove = [];
 
-        //If this was the last person with an rdioid... stop all playback
-        //if(Object.keys(users).length == 1)
-        $('#api').rdio().stop();
-      }
+          //remove this user's tracks
+          for (i in playlist) {
+              if (playlist[i].userid == rdiouserid) {
+                  if (i == currentPlaylistIndex) $('#api').rdio().stop();
+                  //keep track of which tracks to remove
+                  indexesToRemove.push(i);
+              }
+          }
+          //remove the tracks from the array
+          for (i in indexesToRemove) {
+              playlist.splice(indexesToRemove[i]-i, 1);
+          }
+
+          updatePlaylistView();
+    }
+
+    function updatePlaylistView() {
+        $("#ulPlaylist").empty();
+        for (i in playlist) {
+            if (i == currentPlaylistIndex)
+                //Style if this is the current song
+                $("#ulPlaylist").append("<li><strong>" + playlist[i].name + "</strong> from User: " + playlist[i].userid + "</li>");
+            else {
+                $("#ulPlaylist").append("<li>" + playlist[i].name + "from User: " + playlist[i].userid + "</li>");
+            }
+        }
+    }
 
   </script>
 </head>
 <body>
 <h1>Welcome Home!</h1>
-<a class="btn btn-primary" id="btnReceiveThreeUsers">Receive 3 Users</a>
-<a class="btn btn-primary" id="btnReceiveOneUser">Receive 1 User</a>
-<a class="btn btn-primary" id="btnReceiveNoUsers">Receive No Users</a>
+<div>
+    <a class="btn btn-primary" id="btnReceiveThreeUsers">Receive 3 Users</a>
+    <a class="btn btn-primary" id="btnReceiveOneUser">Receive 1 User</a>
+    <a class="btn btn-primary" id="btnReceiveNoUsers">Receive No Users</a>
+</div>
 
 <div style="padding:20px;">
     <div id="divUsers" style="display:none">
@@ -122,7 +173,7 @@
 </div>
   <div id="api"></div>
 
-  <div id="divPlayer" style="display:none">
+  <div id="divPlayer">
       <img id="art" src="" height="200" width="200" style="float:left;margin-right:20px;">
       <div>
         <div><b>Track: </b><span id="track"></span></div>
@@ -138,6 +189,11 @@
           <button id="pause">||</button>
           <button id="next">&gt;&gt;</button>
         </div>
+      </div>
+      <div id="playlist" >
+      <ul id="ulPlaylist">
+        
+      </ul>
       </div>
   </div>
 </body>
