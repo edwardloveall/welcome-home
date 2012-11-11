@@ -1,0 +1,144 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Welcome Home</title>
+  <link href="css/bootstrap.css" rel="stylesheet" type="text/css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+  <script src="js/jquery.rdio.js"></script>
+  <script src="js/rdioplayer.js"></script>
+  <script src="js/bootstrap.js"></script>
+  <script>
+      /*var interval = setInterval(function () {
+          console.log("sup");
+      }, 1000);*/
+
+      var users = [];
+      var pathWithUser = "oneuser.txt";
+      var pathWithoutUser = "nouser.txt";
+      var pathWithThreeUsers = "threeusers.txt";
+
+      function updateUsers(path) {
+          $.ajax({
+              url: path,
+              dataType: "json"
+          }).done(function (data) {
+              //Adding users
+              for (var i in data) {
+                  //Check if we have this user already
+                  //TODO... account for users who already have their MAC address in the array but then come back with updated rdiouserid info
+                  if (!users[i]) {
+                      console.log("Adding user with Mac: " + i);
+                      //Check if the user has a rdiouserid, otherwise just add an empty object with the Mac address as the key
+                      if (data[i].displayname && data[i].rdiouserid) {
+                          users[i] = { "displayname": data[i].displayname, "rdiouserid": data[i].rdiouserid };
+                          handleNewRdioUser(data[i].rdiouserid);
+                      }
+                      else
+                          users[i] = {"displayname":"", "rdiouserid":""};
+                  }
+              }
+
+              //Removing users
+              for (var i in users) {
+                  if (!data[i]) {
+                      console.log("Removing user with mac: " + i);
+                      if (users[i].rdiouserid != "")
+                        handleRemovedRdioUser(users[i].rdiouserid);
+                      delete users[i];
+                  }
+              }
+
+              updateUsersView();
+          });
+      }
+
+      function updateUsersView() {
+          $("#userList").empty();
+          for (var i in users) {
+              if(users[i].rdiouserid != "")
+                $("#userList").append("<li>" + users[i].displayname + " (MAC: " + i + ")</li>");
+              else
+                  $("#userList").append("<li><em>Unknown User (MAC: " + i + ")</em><a href='#' class='btn btn-info'>Link User</a></li>");
+          }
+
+          if (Object.keys(users).length > 0) {
+              $("#divUsers").show();
+              $("#divPlayer").show();
+              $("#divSpinner").hide();
+          } else {
+              $("#divUsers").hide();
+              $("#divPlayer").hide();
+              $("#divSpinner").show();
+          }
+      }
+
+      $(document).ready(function () {
+
+          $("#btnReceiveThreeUsers").click(function () {
+              updateUsers(pathWithThreeUsers);
+          })
+          $("#btnReceiveOneUser").click(function () {
+              updateUsers(pathWithUser);
+          })
+          $("#btnReceiveNoUsers").click(function () {
+              updateUsers(pathWithoutUser);
+          })
+      });
+    
+      function handleNewRdioUser(rdiouserid)
+      {
+        //do some magic with the userid and come back with a song id
+        var songid = "a171827"
+
+        $('#api').rdio().play(songid);
+      }
+
+      function  handleRemovedRdioUser(rdiouserid)
+      {
+        //stop playing this user's tracks
+
+        //If this was the last person with an rdioid... stop all playback
+        //if(Object.keys(users).length == 1)
+        $('#api').rdio().stop();
+      }
+
+  </script>
+</head>
+<body>
+<h1>Welcome Home!</h1>
+<a class="btn btn-primary" id="btnReceiveThreeUsers">Receive 3 Users</a>
+<a class="btn btn-primary" id="btnReceiveOneUser">Receive 1 User</a>
+<a class="btn btn-primary" id="btnReceiveNoUsers">Receive No Users</a>
+
+<div style="padding:20px;">
+    <div id="divUsers" style="display:none">
+        <span>Current Users:</span>
+        <ul id="userList"></ul>
+    </div>
+    <div id="divSpinner">
+        Waiting for users...
+        <img src="img/ajax-loader.gif" />
+    </div>
+</div>
+  <div id="api"></div>
+
+  <div id="divPlayer" style="display:none">
+      <img id="art" src="" height="200" width="200" style="float:left;margin-right:20px;">
+      <div>
+        <div><b>Track: </b><span id="track"></span></div>
+        <div><b>Album: </b><span id="album"></span></div>
+        <div><b>Artist: </b><span id="artist"></span></div>
+        <div><b>Position: </b>
+          <span style="display:inline-block;width:200px;border:1px solid black;">
+            <span id="position" style="display:inline-block;background-color:#666">&nbsp;</span>
+          </span></div>
+        <div>
+          <button id="previous">&lt;&lt;</button>
+          <button id="play">|&gt;</button>
+          <button id="pause">||</button>
+          <button id="next">&gt;&gt;</button>
+        </div>
+      </div>
+  </div>
+</body>
+</html>
