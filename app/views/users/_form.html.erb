@@ -1,24 +1,10 @@
 <%= form_for @user do |f| %>
   <%= f.error_messages %>
-  <p>
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </p>
-  <p>
-    <%= f.label :mac %><br />
-    <%= f.text_field :mac %>
-  </p>
-  <p>
-    <%= f.label :themesong_url %><br />
-    <%= f.text_field :themesong_url %>
-  </p>
-  <p>
-    <%= f.label :rdio_user %><br />
-    <%= f.text_field :rdio_user %>
-  </p>
-  <p>
-    <%= f.label :device_name %><br />
-    <%= f.text_field :device_name %>
-  </p>
-  <p><%= f.submit %></p>
+  <div class="field">
+    <%= f.text_field :name, placeholder: 'Your Name' %>
+  </div>
+  <div class="field">
+    <%= f.text_field :rdio_user, placeholder: 'Your Rdio User ID' %>
+  </div>
+  <div class="action"><%= f.submit %></div>
 <% end %>

@@ -19,10 +19,10 @@ $(document).ready(function() {
           console.log("Adding user with Mac: " + i);
           //Check if the user has a rdiouserid, otherwise just add an empty object with the Mac address as the key
           if (data[i].displayname && data[i].rdiouserid) {
-            users[i] = { "displayname": data[i].displayname, "rdiouserid": data[i].rdiouserid };
+            users[i] = { "displayname": data[i].displayname, "rdiouserid": data[i].rdiouserid, "user_id": data[i].userid };
           }
         else
-          users[i] = {"displayname":"", "rdiouserid":""};
+          users[i] = {"displayname":"", "rdiouserid":"", "user_id":""};
           handleNewUser(users[i], i);
         }
       }
@@ -52,7 +52,7 @@ $(document).ready(function() {
     front_face.classList.add("font-face");
     back_face.classList.add("back-face");
     edit.classList.add("edit");
-    // edit.href = "/users/" + user.userid + "edit";
+    edit.href = "/users/" + user.user_id + "/edit";
 
     if(user.rdiouserid != "") {
       var nameText = document.createTextNode(user.displayname);
@@ -100,7 +100,7 @@ $(document).ready(function() {
     //Do some magic with the userid and come back with songs
 
       //this is just to mock different users joining
-      var path = "/heavyrotation.json?rdiouserid=" + rdiouserid;
+      var path = "/heavyrotation.json?rdiouserid=" + rdiouserid + "";
 
       $.ajax({
           url: path,

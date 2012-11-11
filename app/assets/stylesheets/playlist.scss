@@ -16,6 +16,11 @@ section.playlist {
 
   @include position(fixed, 0 0px 0px 0px);
 
+  ul {
+    height: 278px;
+    overflow: scroll;
+  }
+
   li, div.playlist-header {
     font-weight: 700;
     padding: golden-ratio(18px, -2);
@@ -23,6 +28,7 @@ section.playlist {
     position: relative;
 
     span {
+      color: $color-light-grey;
       display: inline-block;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -54,7 +60,14 @@ section.playlist {
 
     &.current {
       background: $color-blue;
-      color: $color-white;
+
+      span {
+        color: $color-white;
+      }
+
+      span.play-pause {
+        display: inline-block;
+      }
     }
   }
 
@@ -64,5 +77,9 @@ section.playlist {
 }
 
 section.fake-edit {
+  display: none;
+}
+
+#api {
   display: none;
 }

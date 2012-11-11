@@ -13,8 +13,8 @@ $font-size-large: 20px;
 $font-size-text: golden-ratio($font-size-large, -1);
 
 
-.cta-button {
-  $color: #EEEEEE;
+@mixin cta-button($color: #EEEEEE) {
+  border: none;
   border-radius: .3em;
   @include box-shadow(inset 0 0 1px rgba(255, 255, 255, 1));
   color: darken($color, 60%);
