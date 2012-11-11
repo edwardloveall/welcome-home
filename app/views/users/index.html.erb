@@ -1,5 +1,11 @@
 <% title "Users" %>
 
+<script>
+  var interval = setInterval(function () {
+    updateUsers(users_json);
+  }, 1500);
+</script>
+
 <section class="users"></section>
 
 <section class="playlist">
