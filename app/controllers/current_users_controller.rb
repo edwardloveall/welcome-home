@@ -26,16 +26,27 @@ class CurrentUsersController < ApplicationController
       connected_users << user unless user.keys.length == 0
     end
 
+    users = []
+
+    # Create new users if it's their first time, and collect all user objects, new & old
     connected_users.each do |current_user|
       u = User.find_by_mac(current_user[:mac])
       if u.nil?
         puts "NEW USER for MAC #{current_user[:mac]}"
-        User.new(:device_name => current_user[:device_name], :mac => current_user[:mac]).save
+        users << User.new(:device_name => current_user[:device_name], :mac => current_user[:mac]).save
       else
         puts "FOUND USER for MAC #{current_user[:mac]}"
+        users << u
       end
     end
 
+    ui_users = {}
+
+    users.each do |u|
+      ui_users[u.mac] = {:displayname => u.name, :rdiouserid => u.rdio_user}
+    end
+
+    ui_users
   end
 
   def index
