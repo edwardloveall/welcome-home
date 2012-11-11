@@ -1,21 +1,20 @@
 <% title "Users" %>
 
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Mac</th>
-    <th>Themesong Url</th>
-  </tr>
-  <% for user in @users %>
-    <tr>
-      <td><%= user.name %></td>
-      <td><%= user.mac %></td>
-      <td><%= user.themesong_url %></td>
-      <td><%= link_to "Show", user %></td>
-      <td><%= link_to "Edit", edit_user_path(user) %></td>
-      <td><%= link_to "Destroy", user, :confirm => 'Are you sure?', :method => :delete %></td>
-    </tr>
-  <% end %>
-</table>
+<!-- <section class="global actions">
+  <%= link_to "New User", new_user_path %>
+</section> -->
 
-<p><%= link_to "New User", new_user_path %></p>
+<section class="users">
+  <% @users.each do |user| %>
+    <div class="user">
+      <h2><%= user.name %></h2>
+      <div class="info">
+        <p class="mac-address"><%= user.mac %></p>
+        <small class="theme-url"><%= user.themesong_url %></small>
+        <div class="actions">
+          <%= link_to "Edit", edit_user_path(user) %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</section>

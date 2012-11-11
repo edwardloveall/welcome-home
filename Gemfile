@@ -41,3 +41,5 @@ gem "nifty-generators", :group => :development
 
 gem "mocha", :group => :test
 gem 'nokogiri'
+
+gem 'bourbon'
