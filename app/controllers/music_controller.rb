@@ -13,6 +13,16 @@ class MusicController < ApplicationController
     access_token = session[:at]
     access_token_secret = session[:ats]
 
+    if user.nil? || user.empty? || track_limit.nil? || track_limit.empty?
+      respond_to do |format|
+        format.html { 
+          flash.now[:error] = 'Bad Request:  Missing Parameters!'
+          render :text => 'Bad Request:  Missing Parameters!'
+        }
+        format.js { render :text => 'Bad Request:  Missing Parameters!', :status => 500 }
+      end
+    end
+    
     if access_token && access_token_secret
       # begin
         rdio = Rdio.new([RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET],
