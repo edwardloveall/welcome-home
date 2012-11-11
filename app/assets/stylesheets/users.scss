@@ -27,7 +27,8 @@ section.users {
 
     div.font-face {
       z-index: 100;
-      @include linear-gradient(#FFFFFF, #DFDFDF);
+      @include background(url(/assets/note.svg) no-repeat center center, linear-gradient(#FFFFFF, #DFDFDF));
+      background-size: 150px, 100%;
       -webkit-transform: rotateX(0deg) rotateY(0deg);
     }
 
