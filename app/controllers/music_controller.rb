@@ -12,10 +12,10 @@ class MusicController < ApplicationController
     track_limit = params[:limit]
     access_token = session[:at]
     access_token_secret = session[:ats]
-    
+
     if access_token && access_token_secret
-      begin
-        rdio = Rdio.new([RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET], 
+      # begin
+        rdio = Rdio.new([RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET],
                         [access_token, access_token_secret])
 
         # API Call for Rdio user metadata
@@ -24,6 +24,8 @@ class MusicController < ApplicationController
         @avatar = currentUser['icon']
         @playlist = []
         user_id = currentUser['key']
+
+        puts #Current User: {"@currentUser"}
 
         # API Call for list of heavy rotation albums for this user
         @heavyrotation = rdio.call('getHeavyRotation', {:user => user_id})['result']
@@ -40,24 +42,25 @@ class MusicController < ApplicationController
           end
         end
 
-        # Return all track metadata
+        #Return all track metadata
         respond_with(@playlist) do |format|
           format.html
           format.json { render :json => @playlist }
         end
-    rescue Exception => e
-      puts e.message
-
-      respond_to do |format|
-        format.html { 
-          flash.now[:error] = "There was a problem with the RDIO HTTP request."
-          render :text => "Error with RDIO Request"
-        }
-        format.js { render :text => e.message, :status => 500 }
-      end
-    end
+    # rescue Exception => e
+    #   puts e.message
+    #
+    #   respond_to do |format|
+    #     format.html {
+    #       flash.now[:error] = "There was a problem with the RDIO HTTP request."
+    #       render :text => "Error with RDIO Request"
+    #     }
+    #     format.js { render :text => e.message, :status => 500 }
+    #   end
+    # end
     else
       # Log in
+      puts "Not Logged In"
     end
   end
 
@@ -81,7 +84,7 @@ class MusicController < ApplicationController
     # make sure we have everything we need
     if request_token && request_token_secret && verifier
       # exchange the verifier and request token for an access token
-      rdio = Rdio.new([RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET], 
+      rdio = Rdio.new([RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET],
                     [request_token, request_token_secret])
       rdio.complete_authentication(verifier)
       # save the access token in cookies (and discard the request token)
@@ -98,5 +101,5 @@ class MusicController < ApplicationController
     session.clear
     redirect_to '/heavyrotation'
   end
-    
+
 end

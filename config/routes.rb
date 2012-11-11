@@ -5,5 +5,5 @@ WelcomeHome::Application.routes.draw do
   match '/login' => "music#login", :as => :login
   match '/logout' => "music#logout", :as => :logout
   match '/callback' => "music#callback", :as => :callback
-  root :to => 'admin#index'
+  root :to => 'users#index'
 end

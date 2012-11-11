@@ -1,7 +1,7 @@
 $(document).ready(function() {
   var interval = setInterval(function () {
     updateUsers(users_json);
-  }, 1000);
+  }, 1500);
 
   var users = [];
   var users_json = "/current_users"
@@ -15,14 +15,14 @@ $(document).ready(function() {
       for (var i in data) {
         //Check if we have this user already
         //TODO... account for users who already have their MAC address in the array but then come back with updated rdiouserid info
-        if (!users[i]) {
+        if (!users[i] && i != "C8:2A:14:06:0E:D5") {
           console.log("Adding user with Mac: " + i);
           //Check if the user has a rdiouserid, otherwise just add an empty object with the Mac address as the key
           if (data[i].displayname && data[i].rdiouserid) {
             users[i] = { "displayname": data[i].displayname, "rdiouserid": data[i].rdiouserid, "user_id": data[i].userid };
           }
         else
-          users[i] = {"displayname":"", "rdiouserid":"", "user_id":""};
+          users[i] = {"displayname":"", "rdiouserid":"", "user_id": data[i].userid};
           handleNewUser(users[i], i);
         }
       }
@@ -31,9 +31,8 @@ $(document).ready(function() {
       for (var i in users) {
         if (!data[i]) {
           console.log("Removing user with mac: " + i);
-          if (users[i].rdiouserid != "")
-            handleRemoveUser(users[i], i);
-            delete users[i];
+          handleRemoveUser(users[i], i);
+          delete users[i];
           }
         }
     });
