@@ -7,6 +7,7 @@ class MusicController < ApplicationController
   RDIO_CONSUMER_SECRET = 'GjMfpnZf7Z'
 
   def heavyrotation
+    puts "Initing Heavy Rotation..."
 
     user = params[:rdiouserid]
     track_limit = params[:limit]
@@ -29,6 +30,7 @@ class MusicController < ApplicationController
                         [access_token, access_token_secret])
 
         # API Call for Rdio user metadata
+        puts "Calling API for user data..."
         currentUser = rdio.call('findUser', {:vanityName => user})['result']
         @username = currentUser['firstName'] + ' ' + currentUser['lastName']
         @avatar = currentUser['icon']
@@ -38,11 +40,13 @@ class MusicController < ApplicationController
         puts #Current User: {"@currentUser"}
 
         # API Call for list of heavy rotation albums for this user
+        puts "Calling API for heavy rotation..."
         @heavyrotation = rdio.call('getHeavyRotation', {:user => user_id})['result']
 
         # API Calls for metadata on a track of each album
         @heavyrotation.each do |hr|
           rand_track = hr['trackKeys'][1 + rand(hr['trackKeys'].length-1)]
+          puts "Calling API for random track..."
           track_md = rdio.call('get', {:keys => rand_track})['result'][rand_track]
           @playlist << {:user_id => user_id, :user_name => @username, :track_id => track_md['key'], :track_name => track_md['name'], :track_artist => track_md['albumArtist']}
           puts track_md
