@@ -113,20 +113,26 @@
                   console.log("handle new user call back returned");
                   for (var i in data) {
                       playlist.push(data[i]);
+                      handleNewPlaylistTrack(data[i]);
+                      //Only auto-play the playlist if this is the first user joining
                       if (isFirstUser && currentPlayState == STOPPED) {
-                          //Only auto-play the playlist if this is the first user joining
                           isFirstUser = false;
-                          $("#api").rdio().play(playlist[0].trackid);
+                          currentPlaylistIndex = 0;
+                          $("#api").rdio().play(playlist[currentPlaylistIndex].trackid);
+                          $("
                       }
                   }
-
-                  updatePlaylistView();
               },
               error: function (xhr, status) {
                   console.log("error: " + status);
               }
 
           })
+      }
+
+      funciton handleNewPlaylistTrack(track)
+      {
+        $("#ulPlaylist").append("<li>" + track.name + "from User: " + track.userid + "</li>");
       }
 
       function handleRemoveUser(user, macaddress) {
