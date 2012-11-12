@@ -3,8 +3,8 @@ require 'rdio'
 class MusicController < ApplicationController
   respond_to :json, :html
 
-  RDIO_CONSUMER_KEY = 'xg4k5jvs9fceuebstg83z3t7'
-  RDIO_CONSUMER_SECRET = 'GjMfpnZf7Z'
+  RDIO_CONSUMER_KEY = Rails.application.config.rdio_consumer_key
+  RDIO_CONSUMER_SECRET = Rails.application.config.rdio_consumer_secret
 
   def heavyrotation
     puts "Initing Heavy Rotation..."
