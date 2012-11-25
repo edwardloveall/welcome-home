@@ -117,8 +117,8 @@ class MusicController < ApplicationController
       session.delete(:rt)
       session.delete(:rts)
 
-      redirect_to '/heavyrotation'
-  end
+      redirect_to :root
+    end
   end
 
   def logout
