@@ -3,6 +3,7 @@ require 'rdio'
 class MusicController < ApplicationController
   respond_to :json, :html
 
+  # TODO:  Check for empty config values and error
   RDIO_CONSUMER_KEY = Rails.application.config.rdio_consumer_key
   RDIO_CONSUMER_SECRET = Rails.application.config.rdio_consumer_secret
 
@@ -29,6 +30,7 @@ class MusicController < ApplicationController
         rdio = Rdio.new([RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET],
                         [access_token, access_token_secret])
 
+      begin
         # API Call for Rdio user metadata
         puts "Calling API for user data..."
         currentUser = rdio.call('findUser', {:vanityName => user})['result']
@@ -36,6 +38,13 @@ class MusicController < ApplicationController
         @avatar = currentUser['icon']
         @playlist = []
         user_id = currentUser['key']
+      # FIXME: Catch specific exception
+      rescue Exception => ne
+        logger.warn "App Not Authenticated with Rdio.  Redirecting to login. (#{ne.message})"
+        if ne.message.include? '403 Developer Inactive'
+          redirect_to '/login'
+        end
+      end
 
         puts #Current User: {"@currentUser"}
 
@@ -81,6 +90,7 @@ class MusicController < ApplicationController
   def login
     # begin the authentication process
     rdio = Rdio.new([RDIO_CONSUMER_KEY, RDIO_CONSUMER_SECRET])
+
     callback_url = (URI.join request.url, '/callback').to_s
     url = rdio.begin_authentication(callback_url)
     # save our request token in the session
