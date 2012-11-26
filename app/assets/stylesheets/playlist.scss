@@ -81,5 +81,6 @@ section.fake-edit {
 }
 
 #api {
-  display: none;
+  @include position(fixed, 0px 0px 0 0);
+  opacity: 0;
 }
