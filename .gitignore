@@ -17,3 +17,4 @@
 # User added
 .powder
 *.psd
+/config/initializers/gathering.rb
