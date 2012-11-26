@@ -94,7 +94,7 @@ function handleNewRdioUser(rdiouserid) {
   //Do some magic with the userid and come back with songs
 
     //this is just to mock different users joining
-    var path = "/heavyrotation.json?rdiouserid=" + rdiouserid + "";
+    var path = "/heavyrotation.json?rdiouserid=" + rdiouserid + "&limit=3";
 
     $.ajax({
         url: path,
